@@ -1,29 +1,27 @@
-import { useState } from "react";
-import { products, categories } from "./data/products.js";
+import { useState, useEffect } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { products } from "./data/products.js";
 import Navbar from "./components/Navbar.jsx";
-import Hero from "./components/Hero.jsx";
-import CategorySection from "./components/CategorySection.jsx";
-import ProductGrid from "./components/ProductGrid.jsx";
 import ProductModal from "./components/ProductModal.jsx";
 import ShoppingBag from "./components/ShoppingBag.jsx";
-import BrandStory from "./components/BrandStory.jsx";
-import Info from "./components/Info.jsx";
+import WishlistPanel from "./components/WishlistPanel.jsx";
 import Footer from "./components/Footer.jsx";
+import Home from "./components/Home.jsx";
+import Collection from "./components/Collection.jsx";
 
 function App() {
-  const [activeCategory, setActiveCategory] = useState("All");
   const [query, setQuery] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [bagItems, setBagItems] = useState([]);
   const [bagOpen, setBagOpen] = useState(false);
   const [favorites, setFavorites] = useState([]);
+  const [wishlistOpen, setWishlistOpen] = useState(false);
 
-  // Filter by category and search text
-  const visibleProducts = products.filter((p) => {
-    const matchCategory = activeCategory === "All" || p.category === activeCategory;
-    const matchSearch = p.name.toLowerCase().includes(query.toLowerCase());
-    return matchCategory && matchSearch;
-  });
+  // Go back to the top when the page changes
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   const bagCount = bagItems.reduce((sum, item) => sum + item.qty, 0);
 
@@ -51,32 +49,38 @@ function App() {
     }
   };
 
+  const favoriteProducts = products.filter((p) => favorites.includes(p.id));
+
+  const handleViewFromWishlist = (product) => {
+    setWishlistOpen(false);
+    setSelectedProduct(product);
+  };
+
   return (
     <>
       <Navbar
         bagCount={bagCount}
+        favCount={favorites.length}
         onBagClick={() => setBagOpen(true)}
+        onFavoritesClick={() => setWishlistOpen(true)}
         query={query}
         onQueryChange={setQuery}
       />
       <main>
-        <Hero />
-        <section className="collection" id="collection">
-          <h2 className="section-title">THE COLLECTION</h2>
-          <CategorySection
-            categories={categories}
-            activeCategory={activeCategory}
-            onSelect={setActiveCategory}
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Home query={query} favorites={favorites} onOpen={setSelectedProduct} onToggleFavorite={handleToggleFavorite} />
+            }
           />
-          <ProductGrid
-            products={visibleProducts}
-            favorites={favorites}
-            onOpen={setSelectedProduct}
-            onToggleFavorite={handleToggleFavorite}
+          <Route
+            path="/collection"
+            element={
+              <Collection query={query} favorites={favorites} onOpen={setSelectedProduct} onToggleFavorite={handleToggleFavorite} />
+            }
           />
-        </section>
-        <BrandStory />
-        <Info />
+        </Routes>
       </main>
       <Footer />
 
@@ -89,6 +93,14 @@ function App() {
       )}
       {bagOpen && (
         <ShoppingBag items={bagItems} onClose={() => setBagOpen(false)} onRemove={handleRemove} />
+      )}
+      {wishlistOpen && (
+        <WishlistPanel
+          items={favoriteProducts}
+          onClose={() => setWishlistOpen(false)}
+          onRemove={handleToggleFavorite}
+          onView={handleViewFromWishlist}
+        />
       )}
     </>
   );
