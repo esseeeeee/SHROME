@@ -41,13 +41,17 @@ function Info() {
   const [activeTab, setActiveTab] = useState("contacts");
   const current = tabs.find((tab) => tab.id === activeTab);
 
-  return (
-    <section className="info" id="info">
-      <div className="info__tabs">
+      <section id="info" className="border-t border-shrome-line px-6 py-[90px] text-center">
+      <div className="mb-10 flex flex-wrap justify-center gap-x-10 gap-y-2">
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            className={activeTab === tab.id ? "info__tab info__tab--active" : "info__tab"}
+            className={
+              "border-b py-2 text-xs tracking-[0.3em] transition-colors " +
+              (activeTab === tab.id
+                ? "border-shrome-white text-shrome-white"
+                : "border-transparent text-shrome-light hover:text-shrome-white")
+            }
             onClick={() => setActiveTab(tab.id)}
           >
             {tab.title}
@@ -56,23 +60,30 @@ function Info() {
       </div>
 
       {current.contacts ? (
-        <div className="info__contacts">
+        <div className="flex flex-col items-center gap-[22px]">
           {current.contacts.map((item) => (
-            <a key={item.name} href={item.href} target="_blank" rel="noreferrer" className="info__contact">
-              <img src={item.image} alt={item.name} />
+            <a
+              key={item.name}
+              href={item.href}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-4 text-[13px] tracking-[0.12em] transition-opacity hover:opacity-50"
+            >
+              <img src={item.image} alt={item.name} className="h-7 w-7 object-contain" />
               <span>{item.label}</span>
             </a>
           ))}
         </div>
       ) : (
-        <div className="info__panel">
+        <div className="mx-auto max-w-[560px]">
           {current.lines.map((line, index) => (
-            <p key={index}>{line}</p>
+            <p key={index} className="mb-2.5 text-[13px] leading-[1.9] tracking-[0.08em] text-shrome-light">
+              {line}
+            </p>
           ))}
         </div>
       )}
     </section>
-  );
 }
 
 export default Info;

@@ -68,3 +68,11 @@ export const products = [
     image: "/images/SHROME SILVER PIN.png" 
   },
 ];
+
+export function filterProducts(list, category, query) {
+  return list.filter((p) => {
+    const matchCategory = category === "All" || p.category === category;
+    const matchSearch = p.name.toLowerCase().includes(query.toLowerCase());
+    return matchCategory && matchSearch;
+  });
+}

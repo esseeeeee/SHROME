@@ -4,25 +4,32 @@ function ProductCard({ product, isFavorite, onOpen, onToggleFavorite }) {
   const [imageFailed, setImageFailed] = useState(false);
 
   return (
-    <article className="card">
-      <div className="card__media" onClick={() => onOpen(product)}>
+    <article className="group relative bg-shrome-black pb-6">
+      <div className="aspect-[4/5] cursor-pointer overflow-hidden bg-shrome-dark" onClick={() => onOpen(product)}>
         {imageFailed ? (
-          <div className="card__fallback">SHROME</div>
+          <div className="flex h-full items-center justify-center font-serif tracking-[0.4em] text-shrome-gray">
+            SHROME
+          </div>
         ) : (
-          <img src={product.image} alt={product.name} onError={() => setImageFailed(true)} />
+          <img
+            src={product.image}
+            alt={product.name}
+            onError={() => setImageFailed(true)}
+            className="h-full w-full object-cover brightness-[0.85] contrast-[1.1] grayscale transition duration-700 group-hover:scale-105 group-hover:brightness-100"
+          />
         )}
       </div>
       <button
-        className={isFavorite ? "card__fav card__fav--on" : "card__fav"}
+        className={"absolute right-4 top-3.5 text-xl " + (isFavorite ? "text-[#b3b3b3]" : "text-shrome-white")}
         onClick={() => onToggleFavorite(product.id)}
         aria-label="Favorite"
       >
         {isFavorite ? "♥" : "♡"}
       </button>
-      <div className="card__info" onClick={() => onOpen(product)}>
-        <p className="card__category">{product.category.toUpperCase()}</p>
-        <h3 className="card__name">{product.name}</h3>
-        <p className="card__price">₱{product.price.toLocaleString()}</p>
+      <div className="cursor-pointer px-5 pt-5 text-center" onClick={() => onOpen(product)}>
+        <p className="mb-2.5 text-[10px] tracking-[0.35em] text-shrome-light">{product.category.toUpperCase()}</p>
+        <h3 className="mb-2 text-xs font-normal tracking-[0.2em]">{product.name}</h3>
+        <p className="font-serif text-[15px] text-shrome-light">₱{product.price.toLocaleString()}</p>
       </div>
     </article>
   );
